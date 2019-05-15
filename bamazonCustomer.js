@@ -139,6 +139,7 @@ function continueStore() {
     if (res.yes) {
       displayItems();
     } else {
+      console.log("");
       connection.end();
     }
   });
