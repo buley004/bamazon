@@ -91,19 +91,22 @@ function displayItems() {
 function checkStock(id, quant) {
   connection.query("SELECT * FROM products WHERE item_id = " + id, function (err, results) {
     if (err) throw err;
-    console.log(results);
 
     //display insufficient stock message if order too large
     if (quant > results[0].stock_quantity) {
       console.log("Insufficient quantity");
+      continueStore();
     }
+    //display cost of order and update stock
     else {
       orderCost = quant * results[0].price;
       var remainingUnits = results[0].stock_quantity - quant;
       console.log("\nTotal Cost: " + orderCost);
-      console.log("\nRemaining: " + remainingUnits);
       //remove items from stock table
       updateStock(id, remainingUnits);
+
+      //prompt user if they want to continue
+      continueStore();
     };
 
   });
@@ -122,8 +125,24 @@ function updateStock(id, quant) {
     ],
     function (error) {
       if (error) throw err;
-      console.log("Bid placed successfully!");
     }
   );
 };
+
+//function to ask user if they would like to continue
+function continueStore() {
+  inquirer.prompt([
+    {
+      type: "confirm",
+      message: "Would you like to continue shopping?",
+      name: "yes"
+    }
+  ]).then(function(res){
+    if(res.yes){
+      displayItems();
+    } else {
+      connection.end();
+    }
+  });
+}
 
