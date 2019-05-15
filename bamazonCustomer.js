@@ -1,11 +1,14 @@
 var inquirer = require("inquirer");
 var mysql = require("mysql");
+var vTable = require('console.table');
 //untracked git file with mysql password
 var key = require("./keys.js");
-var vTable = require('console.table');
 
-var storeStock = [];
-var itemStock = [];
+//store valid ids for prompt
+var validIds = [];
+//store chosen item and quantity
+var id;
+var chosenQuantity;
 
 //create connection to mysql database
 var connection = mysql.createConnection({
@@ -36,16 +39,33 @@ function runStore() {
     {
       type: "number",
       message: "Please enter the Item ID of what you would like to purchase.",
-      name: "itemId"
+      name: "itemId",
+      validate: function(value) {
+        if (validIds.includes(value) === true) {
+          return true;
+        }
+        console.log("\nPlease enter a valid ID"); 
+        return false;
+      }
     },
     {
       type: "number",
       message: "How many would you like to buy?",
-      name: "quantity"
+      name: "quantity",
+      validate: function(value) {
+        if (Number.isInteger(value) === true) {
+          return true;
+        }
+        console.log("\nPlease enter a valid quantity");
+        return false;
+      }
     }
   ]).then(function(res){
-    console.log(res.itemId);
-    console.log(res.quantity);
+    id = res.itemId;
+    chosenQuantity = res.quantity;
+
+    //check stock
+    checkStock(id, chosenQuantity);
   });
 };
 
@@ -56,8 +76,22 @@ function displayItems(){
     //display store stock
     console.table(results);
 
+    //record IDs in stock for input validation
+    validIds = [];
+    for (let i = 0; i < results.length; i++) {
+      validIds.push(results[i].item_id);
+    };
+
     //run store
     runStore();
   });
+};
+
+function checkStock(id, quant) {
+  connection.query("SELECT * FROM products WHERE item_id = " + id, function(err, results) {
+    if (err) throw err; 
+    console.log(results);
+    
+  })
 }
 
