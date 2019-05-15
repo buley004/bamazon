@@ -71,7 +71,7 @@ function displayItems() {
     if (err) throw err;
 
     //display store stock
-    console.table(results);
+    console.table("", results);
 
     //record IDs in stock for input validation
     validIds = [];
@@ -98,7 +98,7 @@ function checkStock(id, quant) {
       orderCost = quant * results[0].price;
       var remainingUnits = results[0].stock_quantity - quant;
 
-      console.log(divider + "\nTotal Cost: " + orderCost + "\n" + divider);
+      console.log(divider + "\nTotal Cost: $" + orderCost + "\n" + divider);
 
       //remove items from stock table
       updateStock(id, remainingUnits);
