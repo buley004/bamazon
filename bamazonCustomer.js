@@ -10,18 +10,13 @@ var validIds = [];
 var id;
 var chosenQuantity;
 var orderCost;
+var divider = "-----------------------------------";
 
 //create connection to mysql database
 var connection = mysql.createConnection({
   host: "localhost",
-
-  // Your port; if not 3306
   port: 3306,
-
-  // Your username
   user: "root",
-
-  // Your password
   password: key.id,
   database: "bamazon"
 });
@@ -42,10 +37,11 @@ function runStore() {
       message: "Please enter the Item ID of what you would like to purchase.",
       name: "itemId",
       validate: function (value) {
+        //check if chosen ID is in store
         if (validIds.includes(value) === true) {
           return true;
         }
-        console.log("\nPlease enter a valid ID");
+        console.log("\n" + divider + "\nPlease enter a valid ID\n" + divider);
         return false;
       }
     },
@@ -57,7 +53,7 @@ function runStore() {
         if (Number.isInteger(value) === true) {
           return true;
         }
-        console.log("\nPlease enter a valid quantity");
+        console.log("\n" + divider + "\nPlease enter a valid quantity\n" + divider);
         return false;
       }
     }
@@ -94,14 +90,16 @@ function checkStock(id, quant) {
 
     //display insufficient stock message if order too large
     if (quant > results[0].stock_quantity) {
-      console.log("Insufficient quantity");
+      console.log(divider + "\nInsufficient quantity" + "\n" + divider);
       continueStore();
     }
     //display cost of order and update stock
     else {
       orderCost = quant * results[0].price;
       var remainingUnits = results[0].stock_quantity - quant;
-      console.log("\nTotal Cost: " + orderCost);
+
+      console.log(divider + "\nTotal Cost: " + orderCost + "\n" + divider);
+
       //remove items from stock table
       updateStock(id, remainingUnits);
 
@@ -137,8 +135,8 @@ function continueStore() {
       message: "Would you like to continue shopping?",
       name: "yes"
     }
-  ]).then(function(res){
-    if(res.yes){
+  ]).then(function (res) {
+    if (res.yes) {
       displayItems();
     } else {
       connection.end();
