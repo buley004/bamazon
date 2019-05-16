@@ -139,7 +139,7 @@ function continueStore() {
     if (res.yes) {
       displayItems();
     } else {
-      console.log("");
+      console.log(divider + "\nThanks for stopping by!\n" + divider);
       connection.end();
     }
   });
