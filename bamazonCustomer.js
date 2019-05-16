@@ -30,6 +30,9 @@ connection.connect(function (err) {
 
 function runStore() {
 
+  //reset order cost
+  orderCost = 0;
+  
   //prompt for item id and units
   inquirer.prompt([
     {
@@ -98,7 +101,7 @@ function checkStock(id, quant) {
       orderCost = quant * results[0].price;
       var remainingUnits = results[0].stock_quantity - quant;
 
-      console.log(divider + "\nTotal Cost: $" + orderCost + "\n" + divider);
+      console.log(divider + "\nTotal Cost: $" + orderCost.toFixed(2) + "\n" + divider);
 
       //remove items from stock table
       updateStock(id, remainingUnits);
